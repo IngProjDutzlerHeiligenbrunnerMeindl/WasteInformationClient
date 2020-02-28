@@ -153,12 +153,12 @@ void WifiMqttManager::reconnect() {
  */
 void WifiMqttManager::initID(){
     EEPROM.begin(4096); // init the eeprom
-    if (EEPROM.read(EEPROMIDADDRESS) < 1000 || EEPROM.read(EEPROMIDADDRESS) > 9999) { // is the value at the EEPROMIDADDRESS is not between 1000 and 9999
-        EEPROM.write(EEPROMIDADDRESS, random(1000, 9999)); // write a newly generated id between 1000 and 9999 to the eeprom
+    EEPROM.get(EEPROMIDADDRESS, clientIdentifier);
+    if (clientIdentifier < 1000 || clientIdentifier > 9999) { // is the value at the EEPROMIDADDRESS is not between 1000 and 9999
+        EEPROM.put(EEPROMIDADDRESS, random(1000, 9999)); // write a newly generated id between 1000 and 9999 to the eeprom
         EEPROM.commit(); // write the changes to the eeprom
     }
-    clientIdentifier = EEPROM.read(EEPROMIDADDRESS); // read the id from the eeprom
-    Serial.println(EEPROM.read(EEPROMIDADDRESS));
+    Serial.println(clientIdentifier);
     EEPROM.end(); // stop the eeprom communication
     //clientIdentifier = 1000;
 }
