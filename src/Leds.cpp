@@ -25,6 +25,7 @@ void Leds::setNotConfigured() {
 
     static int j = 0; // variable for fading
 
+    clearLeds();
     fadeing = true; // set the fading flag
     fadeNC.attach_ms(5, []() { // enable fading
         if (j < 256) { // fade up
@@ -52,6 +53,7 @@ void Leds::setRequestTimeout() {
 
     static int j = 0; // variable for fading
 
+    clearLeds();
     fadeing = true; // set the fading flag
     fadeRT.attach_ms(5, []() { // enable fading
         if (j < 256) { // fade up
@@ -74,22 +76,23 @@ void Leds::setRequestTimeout() {
 void Leds::setWifiTimeout() {
     Serial.println("Set LEDs");
 
-    fadeNC.detach();
-    clearLed(0);
+    fadeNC.detach(); // deactivate the not connected timeout ticker
+    clearLed(0); // clear the first led
 
-    static int j = 0;
+    static int j = 0; // fade variable
 
-    fadeing = true;
-    fadeWT.attach_ms(5, []() {
-        if (j < 256) {
+    clearLeds();
+    fadeing = true; // set the fade flag
+    fadeWT.attach_ms(5, []() { // activate the wifi timeout ticker
+        if (j < 256) { // fade out
             pixels.setPixelColor(2, pixels.Color(j, 0, j));
-        } else {
+        } else { // fade down
             int c = 511 - j;
             pixels.setPixelColor(2, pixels.Color(c, 0, c));
         }
         pixels.show();
         j++;
-        if (j > 511) {
+        if (j > 511) { // reset fade value
             j = 0;
         }
     });
@@ -100,7 +103,7 @@ void Leds::setWifiTimeout() {
  */
 void Leds::setNotificationLed(int wasteType, boolean state) {
     Serial.println("Set LEDs");
-    if (fadeing) {
+    if (fadeing) { // if one of the leds is fading
         // disable fading
         fadeNC.detach();
         fadeRT.detach();
@@ -109,7 +112,7 @@ void Leds::setNotificationLed(int wasteType, boolean state) {
         fadeing = false;
     }
 
-    if (state) {
+    if (state) { // if the leds should switched on
         if (wasteType == 0) {
             clearLeds();
         } else if (wasteType == 1) { // plastic
@@ -126,12 +129,17 @@ void Leds::setNotificationLed(int wasteType, boolean state) {
 
         }
         pixels.show();
-    } else {
+    } else { // if the leds should switched off
         clearLed(wasteType - 1);
     }
 
 }
 
+/**
+ * function to initialize the leds
+ *
+ * @param brightness global maximum brightness
+ */
 void Leds::init(int brightness) {
     Serial.println("Init pixels");
     pixels.begin();
@@ -139,12 +147,20 @@ void Leds::init(int brightness) {
     pixels.setBrightness(brightness);
 }
 
+/**
+ * function to clear all leds
+ */
 void Leds::clearLeds() {
-    for (int i = 0; i < NUMPIXELS; i++) {
+    for (int i = 0; i < NUMPIXELS; i++) { // loop all leds
         clearLed(i);
     }
 }
 
+/**
+ * function to clear a single led
+ *
+ * @param wasteType led address
+ */
 void Leds::clearLed(int wasteType) {
     pixels.setPixelColor(wasteType, pixels.Color(0, 0, 0));
     pixels.show();
