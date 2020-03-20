@@ -5,17 +5,11 @@
 #include <ESP8266WiFi.h>
 #include "Leds.h"
 
-#define EEPROMIDADDRESS 0 // define the address in the eeprom to store the id
-
-// define the connection settings
-#define WIFISSID "maumauperfekt"
-#define WIFIPASSWORD "gutesPasswort"
-//#define MQTTSERVER "192.168.65.15"
-
-//#define WIFISSID "Virusprogrammierer-Gast"
-//#define WIFIPASSWORD "1qayxsw2"
-#define MQTTSERVER "mqtt.heili.eu"
-#define MQTTPORT 1883
+#define EA_ID 0 // define the address in the eeprom to store the id
+#define EA_SSID 100
+#define EA_PASSWD 140
+#define EA_MQTTIP 180
+#define EA_MQTTPORT 200
 
 #define REQUESTTIMEOUT 4 // define a request timeout
 
@@ -38,8 +32,27 @@ public:
 
     void initID();
 
+    void writeEEPROMString(int startAddress, String inchar);
+
+    String readEEPROMString(int startAddress);
+
+    void initVars();
+
+    void storeVars();
+
 private:
     WiFiClient espClient; // wifi manager
     PubSubClient client;  // mqtt manager
 
+    //char* WIFISSID = "maumauperfekt";
+    //char* WIFIPASSWORD = "gutesPasswort";
+    //char* MQTTSERVER = "192.168.65.15";
+    //char* WIFISSID = "Virusprogrammierer-Gast";
+    //char* WIFIPASSWORD = "1qayxsw2";
+    //char* MQTTSERVER = "mqtt.heili.eu";
+    //int MQTTPORT = 1883;
+    String WIFISSID;
+    String WIFIPASSWORD;
+    String MQTTSERVER;
+    int MQTTPORT;
 };

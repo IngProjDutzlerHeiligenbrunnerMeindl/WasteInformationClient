@@ -15,12 +15,13 @@ static int clientIdentifier; // client id to have a unique number to identify th
  */
 void WifiMqttManager::setupEverything() {
     led.init(50); // initialise the led with a fixed bigness
+    initVars(); // read values from the eeprom
 
     initID(); // read/generate a id from the eeprom
 
-    client.setClient(espClient); //
+    client.setClient(espClient);
     setup_wifi(); // configure the wifi connection
-    client.setServer(MQTTSERVER, MQTTPORT); // configure the mqtt connection and connect
+    client.setServer(MQTTSERVER.c_str(), MQTTPORT); // configure the mqtt connection and connect
     client.setCallback(callback); // set the callback method the react to received mqtt messages
 }
 
@@ -153,12 +154,74 @@ void WifiMqttManager::reconnect() {
  */
 void WifiMqttManager::initID(){
     EEPROM.begin(4096); // init the eeprom
-    EEPROM.get(EEPROMIDADDRESS, clientIdentifier);
+    EEPROM.get(EA_ID, clientIdentifier);
     if (clientIdentifier < 1000 || clientIdentifier > 9999) { // is the value at the EEPROMIDADDRESS is not between 1000 and 9999
-        EEPROM.put(EEPROMIDADDRESS, random(1000, 9999)); // write a newly generated id between 1000 and 9999 to the eeprom
+        EEPROM.put(EA_ID, random(1000, 9999)); // write a newly generated id between 1000 and 9999 to the eeprom
         EEPROM.commit(); // write the changes to the eeprom
     }
     Serial.println(clientIdentifier);
     EEPROM.end(); // stop the eeprom communication
-    //clientIdentifier = 1000;
+}
+
+void WifiMqttManager::writeEEPROMString(int startAddress, String in){
+    EEPROM.begin(4096); // init the eeprom
+    int i = 0;
+    in += '\n';
+    while(in[i]!= '\n')
+    {
+        EEPROM.write(i+startAddress, in[i]);
+        EEPROM.commit();
+        i++;
+    }
+    EEPROM.write(i+startAddress, '\n');
+    EEPROM.commit();
+    EEPROM.end(); // stop the eeprom communication
+}
+
+String WifiMqttManager::readEEPROMString(int startAddress){
+    EEPROM.begin(4096); // init the eeprom
+    int i = 0;
+    char in;
+    String esid;
+    in = char(EEPROM.read(i+startAddress));
+    while(char(in) != '\n')
+    {
+        esid += in;
+        i++;
+        in = char(EEPROM.read(i+startAddress));
+    }
+    EEPROM.end(); // stop the eeprom communication
+    return esid;
+}
+
+void WifiMqttManager::initVars(){
+    /*
+     * char* WIFISSID = "maumauperfekt";
+     * char* WIFIPASSWORD = "gutesPasswort";
+     * char* MQTTSERVER = "mqtt.heili.eu";
+     * int MQTTPORT = 1883;
+     * */
+    WIFISSID = (readEEPROMString(EA_SSID));
+    WIFIPASSWORD = (readEEPROMString(EA_PASSWD));
+    MQTTSERVER = (readEEPROMString(EA_MQTTIP));
+    MQTTPORT = EEPROM.read(EA_MQTTIP);
+
+//    WIFISSID = "Virusprogrammierer-Gast";
+//    WIFIPASSWORD = "1qayxsw2";
+//    MQTTSERVER = "mqtt.heili.eu";
+//    int MQTTPORT = 1883;
+}
+
+void WifiMqttManager::storeVars(){
+    /*
+     * char* WIFISSID = "maumauperfekt";
+     * char* WIFIPASSWORD = "gutesPasswort";
+     * char* MQTTSERVER = "mqtt.heili.eu";
+     * int MQTTPORT = 1883;
+     * */
+    writeEEPROMString(EA_SSID, WIFISSID);
+    writeEEPROMString(EA_PASSWD, WIFIPASSWORD);
+    writeEEPROMString(EA_MQTTIP, MQTTSERVER);
+    EEPROM.write(EA_MQTTPORT, MQTTPORT);
+    EEPROM.commit();
 }
