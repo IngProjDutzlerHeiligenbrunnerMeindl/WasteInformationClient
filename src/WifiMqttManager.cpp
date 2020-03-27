@@ -48,10 +48,16 @@ void WifiMqttManager::setup_wifi() {
 
     WiFi.begin(WIFISSID, WIFIPASSWORD); // connect to the wifi network with the set ssid and passwort
 
+    int retries = 0;
     while (WiFi.status() != WL_CONNECTED) { // wait until the connection to up and running
         delay(500); // delay between checks
         Serial.print("."); // print a "." to indicate the connecting process
+        retries++;
+        if (retries > 32){
+            led.setWifiTimeout();
+        }
     }
+    led.disableWifiTimeout();
 
     randomSeed(micros());
 
@@ -194,6 +200,21 @@ String WifiMqttManager::readEEPROMString(int startAddress){
     return esid;
 }
 
+void WifiMqttManager::writeEEPROMInt(int startAddress, int inint){
+    EEPROM.begin(4096); // init the eeprom
+    EEPROM.put(startAddress, inint);
+    EEPROM.commit(); // write the changes to the eeprom
+    EEPROM.end(); // stop the eeprom communication
+}
+
+int WifiMqttManager::readEEPROMInt(int startAddress){
+    int value = 0;
+    EEPROM.begin(4096); // init the eeprom
+    EEPROM.get(startAddress, value);
+    EEPROM.end(); // stop the eeprom communication
+    return value;
+}
+
 void WifiMqttManager::initVars(){
     /*
      * char* WIFISSID = "maumauperfekt";
@@ -204,12 +225,12 @@ void WifiMqttManager::initVars(){
     WIFISSID = (readEEPROMString(EA_SSID));
     WIFIPASSWORD = (readEEPROMString(EA_PASSWD));
     MQTTSERVER = (readEEPROMString(EA_MQTTIP));
-    MQTTPORT = EEPROM.read(EA_MQTTIP);
+    MQTTPORT = (readEEPROMInt(EA_MQTTPORT));
 
 //    WIFISSID = "Virusprogrammierer-Gast";
 //    WIFIPASSWORD = "1qayxsw2";
 //    MQTTSERVER = "mqtt.heili.eu";
-//    int MQTTPORT = 1883;
+//    MQTTPORT = 1883;
 }
 
 void WifiMqttManager::storeVars(){
@@ -222,6 +243,45 @@ void WifiMqttManager::storeVars(){
     writeEEPROMString(EA_SSID, WIFISSID);
     writeEEPROMString(EA_PASSWD, WIFIPASSWORD);
     writeEEPROMString(EA_MQTTIP, MQTTSERVER);
-    EEPROM.write(EA_MQTTPORT, MQTTPORT);
-    EEPROM.commit();
+    writeEEPROMInt(EA_MQTTPORT, MQTTPORT);
+}
+
+String WifiMqttManager::getID(){
+    return String(clientIdentifier);
+}
+
+String WifiMqttManager::getSSID(){
+    return WIFISSID;
+}
+
+String WifiMqttManager::getPassword(){
+    return WIFIPASSWORD;
+}
+
+String WifiMqttManager::getServer(){
+    return MQTTSERVER;
+}
+
+String WifiMqttManager::getPort(){
+    return String(MQTTPORT);
+}
+
+void WifiMqttManager::setID(int id){
+    clientIdentifier = id;
+}
+
+void WifiMqttManager::setSSID(String ssid){
+    WIFISSID = ssid;
+}
+
+void WifiMqttManager::setPassword(String password){
+    WIFIPASSWORD = password;
+}
+
+void WifiMqttManager::setServer(String server){
+    MQTTSERVER = server;
+}
+
+void WifiMqttManager::setPort(int port){
+    MQTTPORT = port;
 }

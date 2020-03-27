@@ -98,11 +98,19 @@ void Leds::setWifiTimeout() {
     });
 }
 
+void Leds::disableWifiTimeout() {
+    if (fadeing) { // if one of the leds is fading
+        // disable wifi fading
+        fadeWT.detach();
+        clearLeds();
+        fadeing = false;
+    }
+}
+
 /**
  * set led to show the pickup of a chosen waste type
  */
 void Leds::setNotificationLed(int wasteType, boolean state) {
-    Serial.println("Set LEDs");
     if (fadeing) { // if one of the leds is fading
         // disable fading
         fadeNC.detach();

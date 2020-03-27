@@ -9,7 +9,7 @@
 #define EA_SSID 100
 #define EA_PASSWD 140
 #define EA_MQTTIP 180
-#define EA_MQTTPORT 200
+#define EA_MQTTPORT 10
 
 #define REQUESTTIMEOUT 4 // define a request timeout
 
@@ -36,9 +36,33 @@ public:
 
     String readEEPROMString(int startAddress);
 
+    void writeEEPROMInt(int startAddress, int inint);
+
+    int readEEPROMInt(int startAddress);
+
     void initVars();
 
     void storeVars();
+
+    String getID();
+
+    String getSSID();
+
+    String getPassword();
+
+    String getServer();
+
+    String getPort();
+
+    void setID(int id);
+
+    void setSSID(String ssid);
+
+    void setPassword(String password);
+
+    void setServer(String server);
+
+    void setPort(int port);
 
 private:
     WiFiClient espClient; // wifi manager

@@ -25,6 +25,8 @@ public:
 
     void setWifiTimeout();
 
+    void disableWifiTimeout();
+
     void setNotificationLed(int wasteType, boolean state);
 
     void init(int brightness);
