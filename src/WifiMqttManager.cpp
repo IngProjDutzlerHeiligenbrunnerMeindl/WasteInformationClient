@@ -165,7 +165,7 @@ void WifiMqttManager::initID(){
         EEPROM.put(EA_ID, random(1000, 9999)); // write a newly generated id between 1000 and 9999 to the eeprom
         EEPROM.commit(); // write the changes to the eeprom
     }
-    Serial.println(clientIdentifier);
+    Serial.println("ID:" + clientIdentifier);
     EEPROM.end(); // stop the eeprom communication
 }
 

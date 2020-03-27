@@ -22,6 +22,8 @@ void handleRoot();
 
 void handleNotFound();
 
+void handleGet();
+
 // setup() only execute once for initialization
 void setup() {
     Serial.begin(115200);     // define to serial interface with the boud rate
@@ -47,6 +49,7 @@ void setup() {
         //server.on("/", handleRoot);      //Which routine to handle at root location
 
         server.on("/", HTTP_GET, handleRoot);
+        server.on("/specificArgs", handleGet);
         server.onNotFound(handleNotFound);
 
         server.begin();
@@ -88,39 +91,47 @@ void handleRoot() { // When URI / is requested, send a web page with a button to
                               "  <title>ESP Input Form</title>\n"
                               "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
                               "  </head><body>\n"
-                              "  <form action=\"/get\">\n"
-                              "    " + String(PARAM_INPUT_1) + ": <input placeholder=" + manager.getSSID() +
-                              " type=\"text\" name=>\n"
+                              "  <form action=\"/get?" + String(PARAM_INPUT_1) + "\">\n"
+                              "    " + String(PARAM_INPUT_1) + ": <input placeholder=" + manager.getSSID() + " type=\"text\" name=>\n"
                               "    <input type=\"submit\" value=\"Submit\">\n"
                               "  </form><br>\n"
-                              "  <form action=\"/get\">\n"
-                              "    " + String(PARAM_INPUT_2) + ": <input placeholder=" + manager.getPassword() +
-                              " type=\"text\" name=>\n"
+                              "  <form action=\"/get?" + String(PARAM_INPUT_2) + "\">\n"
+                              "    " + String(PARAM_INPUT_2) + ": <input placeholder=" + manager.getPassword() + " type=\"text\" name=>\n"
                               "    <input type=\"submit\" value=\"Submit\">\n"
                               "  </form><br>\n"
-                              "  <form action=\"/get\">\n"
-                              "    " + String(PARAM_INPUT_3) + ": <input placeholder=" + manager.getServer() +
-                              " type=\"text\" name=>\n"
+                              "  <form action=\"/get?" + String(PARAM_INPUT_2) + "\">\n"
+                              "    " + String(PARAM_INPUT_3) + ": <input placeholder=" + manager.getServer() + " type=\"text\" name=>\n"
                               "    <input type=\"submit\" value=\"Submit\">\n"
                               "  </form><br>\n"
-                              "  <form action=\"/get\">\n"
-                              "    " + String(PARAM_INPUT_4) + ": <input placeholder=" + manager.getPort() +
-                              " type=\"text\" name=>\n"
+                              "  <form action=\"/get?" + String(PARAM_INPUT_3) + "\">\n"
+                              "    " + String(PARAM_INPUT_4) + ": <input placeholder=" + manager.getPort() + " type=\"text\" name=>\n"
                               "    <input type=\"submit\" value=\"Submit\">\n"
                               "  </form><br>\n"
-                              "  <form action=\"/get\">\n"
-                              "    " + String(PARAM_INPUT_5) + ": <input placeholder=" + manager.getID() +
-                              " type=\"text\" name=>\n"
+                              "  <form action=\"/get?" + String(PARAM_INPUT_4) + "\">\n"
+                              "    " + String(PARAM_INPUT_5) + ": <input placeholder=" + manager.getID() + " type=\"text\" name=>\n"
                               "    <input type=\"submit\" value=\"Submit\">\n"
                               "  </form><br>\n"
                               "</body></html>";
 
-    Serial.println(manager.getPort());
-    Serial.println(manager.getID());
     server.send(200, "text/html", index_html);
 }
 
 void handleNotFound() {
     server.send(404, "text/plain",
                 "404: Not found"); // Send HTTP status 404 (Not Found) when there's no handler for the URI in the request
+}
+
+void handleGet(){
+    String message = "";
+
+    if (server.arg("Temperature")== ""){     //Parameter not found
+
+        message = "Temperature Argument not found";
+
+    }else{     //Parameter found
+
+        message = "Temperature Argument = ";
+        message += server.arg("Temperature");     //Gets the value of the query parameter
+
+    }
 }
