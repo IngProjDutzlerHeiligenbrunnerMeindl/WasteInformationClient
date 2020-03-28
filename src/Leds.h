@@ -31,6 +31,8 @@ public:
 
     void init(int brightness);
 
+    void begin();
+
     void clearLeds();
 
     void clearLed(int wasteType);

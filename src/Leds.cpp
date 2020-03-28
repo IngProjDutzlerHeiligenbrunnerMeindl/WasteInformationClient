@@ -155,6 +155,10 @@ void Leds::init(int brightness) {
     pixels.setBrightness(brightness);
 }
 
+void Leds::begin(){
+    pixels.begin();
+}
+
 /**
  * function to clear all leds
  */
