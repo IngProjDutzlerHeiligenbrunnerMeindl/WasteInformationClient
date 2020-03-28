@@ -140,24 +140,21 @@ void handleGet() {
     if (server.arg(String(PARAM_INPUT_1)) != "") {
         message += server.arg(String(PARAM_INPUT_1));     //Gets the value of the query parameter
         manager.setSSID(message);
-    }
-    if (server.arg(String(PARAM_INPUT_2)) != "") {
+    } else if (server.arg(String(PARAM_INPUT_2)) != "") {
         message += server.arg(String(PARAM_INPUT_2));     //Gets the value of the query parameter
         manager.setPassword(message);
-    }
-    if (server.arg(String(PARAM_INPUT_3)) != "") {
+    } else if (server.arg(String(PARAM_INPUT_3)) != "") {
         message += server.arg(String(PARAM_INPUT_3));     //Gets the value of the query parameter
         manager.setServer(message);
-    }
-    if (server.arg(String(PARAM_INPUT_4)) != "") {
+    } else if (server.arg(String(PARAM_INPUT_4)) != "") {
         message += server.arg(String(PARAM_INPUT_4));     //Gets the value of the query parameter
         manager.setPort(atoi(message.c_str()));
-    }
-    if (server.arg(String(PARAM_INPUT_5)) != "") {
+    } else if (server.arg(String(PARAM_INPUT_5)) != "") {
         message += server.arg(String(PARAM_INPUT_5));     //Gets the value of the query parameter
         manager.setID(atoi(message.c_str()));
-    } if (server.arg(String(PARAM_INPUT_6)) != "") {
+    } else if (server.arg(String(PARAM_INPUT_6)) != "") {
         ESP.reset();
+        Serial.println("Reset ...");
     } else {     //Parameter not found
         Serial.println("Parameter not found");
     }
