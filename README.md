@@ -2,13 +2,13 @@
 
 Software writen for ESP8266
 
-Hardwareinterfaces:
+## Hardwareinterfaces
 - push buttons
   - reset button
   - flash button
 - webinterface in config mode
 
-Flashing:
+## Flashing
 - click upload in your ide
 - push buth buttons
 - leave the reset botton and keep the flash botton push of on e more second
@@ -16,13 +16,13 @@ Flashing:
 - wait until the ide finished the flashing process and the blue chip led stopped flashing
 - push the reset button the esp starts executing the newly flashed firmware
 
-Usage after flashing:
+## Usage after flashing
 - Normal mode (requesting mode)
   - Just power the board over a USB type c cable
 - Configuration mode (setting the necessary parameters)
   - push the flash button in the first second after powering the board
 
-Normal mode:
+## Normal mode
 - the board connects to the set wifi
   - the blue led on the chip light up while trying to connect to the wifi
   - if the connection fails the third led starts fadeing purple
@@ -38,7 +38,7 @@ Normal mode:
     - the wifi connection could be established or dropped
     - make sure the set wifi options (ssid and password) are correct and the wifi is in range
     - reset the board by pushing the reset button to esablish a reconnect
-Config mode:
+## Config mode
 - blue led flashes while esp is in this mode
 - esp creats a wifi accespoint
   - ssid: Wastinfoboard+[deviceid]
