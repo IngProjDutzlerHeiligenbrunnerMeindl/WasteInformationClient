@@ -7,103 +7,47 @@
 #define NUMPIXELS 4
 
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800); // abstraction of the led pixels
-Ticker fadeNC; // ticker to show that the client is not configured
-Ticker fadeRT; // ticker to show that the request timed out (not answer from the server)
-Ticker fadeWT; // ticker to show that the wifi connection dropped or timed out
-boolean fadeing = false; // flag to set if the leds at in fading mode or eliminating permanently
+boolean fadeNC; // flag to set the client is not configured
+boolean fadeRT; // flag to set that the request timed out (not answer from the server)
+boolean fadeWT; // flag to set that the wifi connection dropped or timed out
+Ticker fade;    // fading ticker
+int j = 0;
+int xxx = 0;
 
 /**
  * set led to show a not configured client
  */
 void Leds::setNotConfigured() {
-    Serial.println("Set LEDs");
-
-    fadeRT.detach(); // disable the request timeout ticker
-    clearLed(1); // clear the second led
-    fadeWT.detach(); // disable the wifi timeout ticker
-    clearLed(2); // clear the third led
-
-    static int j = 0; // variable for fading
-
-    clearLeds();
-    fadeing = true; // set the fading flag
-    fadeNC.attach_ms(5, []() { // enable fading
-        if (j < 256) { // fade up
-            pixels.setPixelColor(0, pixels.Color(j, j, j)); // fade up the first led
-        } else { // fade down
-            int c = 511 - j; // calculate fading value
-            pixels.setPixelColor(0, pixels.Color(c, c, c)); // fade down the led
-        }
-        pixels.show(); // eluminate led
-        j++; // increment the fade counter
-        if (j > 511) { // reset the fade counter
-            j = 0;
-        }
-    });
+    fadeRT = false; // disable the request timeout ticker
+    clearLed(1); // clear the fadeRT led
+    fadeWT = false; // disable the wifi timeout ticker
+    clearLed(2); // clear the fadeWT led
+    fadeNC = true;
 }
 
 /**
  * set led to show a request timeout of the request
  */
 void Leds::setRequestTimeout() {
-    Serial.println("Set LEDs");
-
-    fadeNC.detach(); // disable the not connected timeout ticker
-    clearLed(0); // clear the first led
-
-    static int j = 0; // variable for fading
-
-    clearLeds();
-    fadeing = true; // set the fading flag
-    fadeRT.attach_ms(5, []() { // enable fading
-        if (j < 256) { // fade up
-            pixels.setPixelColor(1, pixels.Color(j, 0, 0)); // fade up the first led
-        } else { // fade down
-            int c = 511 - j; // calculate fading value
-            pixels.setPixelColor(1, pixels.Color(c, 0, 0)); // fade down the led
-        }
-        pixels.show(); // eluminate led
-        j++; // increment the fade counter
-        if (j > 511) { // reset the fade counter
-            j = 0;
-        }
-    });
+    fadeNC = false; // disable the not connected timeout ticker
+    clearLed(0); // clear the fadeNC led
+    fadeRT = true;
 }
 
 /**
  * set led to show a dropped wifi connection/wifi timeout
  */
 void Leds::setWifiTimeout() {
-    Serial.println("Set LEDs");
-
-    fadeNC.detach(); // deactivate the not connected timeout ticker
-    clearLed(0); // clear the first led
-
-    static int j = 0; // fade variable
-
-    clearLeds();
-    fadeing = true; // set the fade flag
-    fadeWT.attach_ms(5, []() { // activate the wifi timeout ticker
-        if (j < 256) { // fade out
-            pixels.setPixelColor(2, pixels.Color(j, 0, j));
-        } else { // fade down
-            int c = 511 - j;
-            pixels.setPixelColor(2, pixels.Color(c, 0, c));
-        }
-        pixels.show();
-        j++;
-        if (j > 511) { // reset fade value
-            j = 0;
-        }
-    });
+    fadeNC = false; // deactivate the not connected timeout ticker
+    clearLed(0); // clear the fadeNC led
+    fadeWT = true;
 }
 
 void Leds::disableWifiTimeout() {
-    if (fadeing) { // if one of the leds is fading
+    if (fadeWT) { // if one of the leds is fading
         // disable wifi fading
-        fadeWT.detach();
-        clearLeds();
-        fadeing = false;
+        fadeWT = false;
+        clearLed(2); // clear the fadeWT led
     }
 }
 
@@ -111,13 +55,12 @@ void Leds::disableWifiTimeout() {
  * set led to show the pickup of a chosen waste type
  */
 void Leds::setNotificationLed(int wasteType, boolean state) {
-    if (fadeing) { // if one of the leds is fading
+    if (fadeRT || fadeWT || fadeNC) { // if one of the leds is fading
         // disable fading
-        fadeNC.detach();
-        fadeRT.detach();
-        fadeWT.detach();
+        fadeNC = false;
+        fadeRT = false;
+        fadeWT = false;
         clearLeds();
-        fadeing = false;
     }
 
     if (state) { // if the leds should switched on
@@ -137,7 +80,7 @@ void Leds::setNotificationLed(int wasteType, boolean state) {
 
         }
         pixels.show();
-    } else { // if the leds should switched off
+    } else { // switch off the chosen led
         clearLed(wasteType - 1);
     }
 
@@ -153,6 +96,27 @@ void Leds::init(int brightness) {
     pixels.begin();
     pixels.clear();
     pixels.setBrightness(brightness);
+    fade.attach_ms(5,[](){
+        if (j < 256) { // fade up
+            xxx = j;
+        } else { // fade down
+            int c = 511 - j; // calculate fading value
+            xxx = c;
+        }
+        j++; // increment the fade counter
+        if (j > 511) { // reset the fade counter
+            j = 0;
+        }
+
+        if (fadeNC){
+            pixels.setPixelColor(0, pixels.Color(xxx, xxx, xxx));
+        } if (fadeRT){
+            pixels.setPixelColor(1, pixels.Color(xxx, 0, 0));
+        } if (fadeWT){
+        pixels.setPixelColor(2, pixels.Color(xxx, 0, xxx));
+        }
+        pixels.show(); // eluminate led
+    });
 }
 
 void Leds::begin(){

@@ -9,6 +9,7 @@
 WifiMqttManager manager; // generating a new manager for the mqtt connections
 Ticker requestTicker;    // generating a software timer to request data periodically
 boolean configMode = true;
+Ticker t;
 
 const char *PARAM_INPUT_1 = "ssid";
 const char *PARAM_INPUT_2 = "wifipassword";
@@ -122,9 +123,9 @@ void handleRoot() { // When URI / is requested, send a web page with a button to
                               manager.getID() + " type=\"text\" name=\"" + String(PARAM_INPUT_5) + "\">\n"
                               "    <input type=\"submit\" value=\"Submit\">\n"
                               "  </form><br>\n"
-                              "  <form action=\"/get?" + String(PARAM_INPUT_6) + "\">\n" + String(PARAM_INPUT_6) + "\n"
-                              "    <input type=\"submit\" value=\"Submit\">\n"
-                              "  </form><br>\n"
+                              "  <a href='/get?reset=reset' >\n"
+                              "    <button>Reset ESP ...</button>"
+                              "  </a>\n"
                               "</body></html>";
 
     server.send(200, "text/html", index_html);
@@ -136,6 +137,14 @@ void handleNotFound() {
 }
 
 void handleGet() {
+    String s = "<!DOCTYPE HTML><html><head>\n"
+               "  <title>Wastinfoboard-ConfigurationPage</title>\n"
+               "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
+               "  <meta http-equiv=\"refresh\" content=\"0; URL=/\">\n"
+               "  </head><body>\n"
+               "</body></html>";
+    server.send(200, "text/html", s); //Send web page
+
     String message = "";
     if (server.arg(String(PARAM_INPUT_1)) != "") {
         message += server.arg(String(PARAM_INPUT_1));     //Gets the value of the query parameter
@@ -153,17 +162,12 @@ void handleGet() {
         message += server.arg(String(PARAM_INPUT_5));     //Gets the value of the query parameter
         manager.setID(atoi(message.c_str()));
     } else if (server.arg(String(PARAM_INPUT_6)) != "") {
-        ESP.reset();
         Serial.println("Reset ...");
+        t.once(1, [](){
+            ESP.reset();
+        });
     } else {     //Parameter not found
         Serial.println("Parameter not found");
     }
-    String s = "<!DOCTYPE HTML><html><head>\n"
-               "  <title>Wastinfoboard-ConfigurationPage</title>\n"
-               "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
-               "  <meta http-equiv=\"refresh\" content=\"0; URL=http://192.168.4.1\">\n"
-               "  </head><body>\n"
-               "</body></html>";
-    server.send(200, "text/html", s); //Send web page
     manager.storeVars();
 }
