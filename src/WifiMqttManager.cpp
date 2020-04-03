@@ -1,3 +1,10 @@
+/**
+ * wifi and mqtt manager class
+ * created by Emil Meindl, Lukas Heiligenbrunner
+ * in 2019
+ * last edited 2020
+ */
+
 #include <Ticker.h>
 #include <EEPROM.h>
 #include "WifiMqttManager.h"

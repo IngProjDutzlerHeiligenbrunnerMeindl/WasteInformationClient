@@ -1,3 +1,10 @@
+/**
+ * wifi and mqtt manager header file
+ * created by Emil Meindl, Lukas Heiligenbrunner
+ * in 2019
+ * last edited 2020
+ */
+
 #pragma once
 
 #include <ESP8266WiFi.h>
@@ -71,8 +78,6 @@ private:
     //char* WIFISSID = "maumauperfekt";
     //char* WIFIPASSWORD = "gutesPasswort";
     //char* MQTTSERVER = "192.168.65.15";
-    //char* WIFISSID = "Virusprogrammierer-Gast";
-    //char* WIFIPASSWORD = "1qayxsw2";
     //char* MQTTSERVER = "mqtt.heili.eu";
     //int MQTTPORT = 1883;
     String WIFISSID;

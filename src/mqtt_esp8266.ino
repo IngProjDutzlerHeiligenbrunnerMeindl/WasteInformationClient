@@ -1,3 +1,10 @@
+/**
+ * waste infomation board main class
+ * created by Emil Meindl
+ * in 2019
+ * last edited 2020
+ */
+
 #include <Ticker.h>
 #include <EEPROM.h>
 #include <ESP8266WebServer.h>
@@ -8,8 +15,8 @@
 
 WifiMqttManager manager; // generating a new manager for the mqtt connections
 Ticker requestTicker;    // generating a software timer to request data periodically
-boolean configMode = true;
-Ticker t;
+boolean configMode = true;  // config mode flag
+Ticker resetTicker;  // esp reset ticker; delayed reset
 
 const char *PARAM_INPUT_1 = "ssid";
 const char *PARAM_INPUT_2 = "wifipassword";
@@ -163,7 +170,7 @@ void handleGet() {
         manager.setID(atoi(message.c_str()));
     } else if (server.arg(String(PARAM_INPUT_6)) != "") {
         Serial.println("Reset ...");
-        t.once(1, [](){
+        resetTicker.once(1, [](){
             ESP.reset();
         });
     } else {     //Parameter not found

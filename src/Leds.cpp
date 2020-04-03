@@ -1,3 +1,10 @@
+/**
+ * led controller class
+ * created by Emil Meindl
+ * in 2019
+ * last edited 2020
+ */
+
 #include <Adafruit_NeoPixel.h>
 #include <Ticker.h>
 #include "Leds.h"
@@ -11,8 +18,8 @@ boolean fadeNC; // flag to set the client is not configured
 boolean fadeRT; // flag to set that the request timed out (not answer from the server)
 boolean fadeWT; // flag to set that the wifi connection dropped or timed out
 Ticker fade;    // fading ticker
-int j = 0;
-int xxx = 0;
+int fadeLevel = 0;    // running from 0 to 512
+int ledFadeLevel = 0; // running from 0 to 255 and 0
 
 /**
  * set led to show a not configured client
@@ -97,23 +104,22 @@ void Leds::init(int brightness) {
     pixels.clear();
     pixels.setBrightness(brightness);
     fade.attach_ms(5,[](){
-        if (j < 256) { // fade up
-            xxx = j;
+        if (fadeLevel < 256) { // fade up
+            ledFadeLevel = fadeLevel;
         } else { // fade down
-            int c = 511 - j; // calculate fading value
-            xxx = c;
+            ledFadeLevel = 511 - fadeLevel; // calculate fading value
         }
-        j++; // increment the fade counter
-        if (j > 511) { // reset the fade counter
-            j = 0;
+        fadeLevel++; // increment the fade counter
+        if (fadeLevel > 511) { // reset the fade counter
+            fadeLevel = 0;
         }
 
         if (fadeNC){
-            pixels.setPixelColor(0, pixels.Color(xxx, xxx, xxx));
+            pixels.setPixelColor(0, pixels.Color(ledFadeLevel, ledFadeLevel, ledFadeLevel));
         } if (fadeRT){
-            pixels.setPixelColor(1, pixels.Color(xxx, 0, 0));
+            pixels.setPixelColor(1, pixels.Color(ledFadeLevel, 0, 0));
         } if (fadeWT){
-        pixels.setPixelColor(2, pixels.Color(xxx, 0, xxx));
+        pixels.setPixelColor(2, pixels.Color(ledFadeLevel, 0, ledFadeLevel));
         }
         pixels.show(); // eluminate led
     });

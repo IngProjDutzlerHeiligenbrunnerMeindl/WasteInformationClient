@@ -1,3 +1,10 @@
+/**
+ * led controller header file
+ * created by Emil Meindl
+ * in 2019
+ * last edited 2020
+ */
+
 #pragma once
 
 #include <Adafruit_NeoPixel.h>
