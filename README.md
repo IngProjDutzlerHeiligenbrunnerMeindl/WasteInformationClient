@@ -27,14 +27,14 @@ Software writen for ESP8266
   - the blue led on the chip light up while trying to connect to the wifi
   - if the connection fails the third led starts fadeing purple
 - if a stable wifi connection could be astablished the board connects to the mqtt server to be able the send requests and receive data
-- fedeing modes:
-  - white
+- error codes:
+  - white fading
     - the decive is not configured on the server
     - click on the devices menu in the web interface and set the cities, wastetypes and zones the device should get informed about
-  - red
+  - red fading
     - no answer to the sent request
     - make sure that the server jar is running and the board is able to connect
-  - purple
+  - purple fading
     - the wifi connection could be established or dropped
     - make sure the set wifi options (ssid and password) are correct and the wifi is in range
     - reset the board by pushing the reset button to esablish a reconnect
